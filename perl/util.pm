@@ -1,0 +1,65 @@
+#!/usr/bin/perl
+#-*- coding:utf-8 -*-
+#file name:util.pm
+#Prupose:This is a utils module for programing
+#
+#Notes:
+#
+#04/12/2013-Andy Meng,Created
+
+package util;
+
+
+use Net::Ping;
+
+sub ispingable {
+    my $target = $_[0];
+    print "Testing DUT is $target\n";
+    $p = Net::Ping->new("tcp");
+    ($ret,$dur,$ip)=$p->ping($target);
+    if ($ret){
+        printf("$target [ip :$ip] is alive\n");
+        $p->close();
+    }
+    $ret
+}
+
+sub getType {
+    my $type = $_[0];
+    my %typedic = (
+       "VlanIndex" =>"GAU",
+        "PortList"=>"BITS",
+         "INTEGER"=>"INT",
+       "RowStatus"=>"INT",
+       "TruthValue"=>"INT",
+      "InetAddress"=>"OCT",
+      "Unsigned32"=>"GAU",
+    "EightOTwoOui"=>"OCT");
+    if (!$typedic{$type}){
+        print "Unmapped $type in util.pm\n";
+    }
+     $typedic{$type};
+}
+
+sub mac2index {
+    my $mac = $_[0];
+    my @mac_b = split(":",$mac);
+    foreach $m_mac (split(":",$mac)) {
+        my $num = 0 + hex($m_mac);
+        $index = sprintf("$index.%s",$num);
+    }
+    my $len = 0 + $index;
+    $res = substr($index,1);
+}
+=pod
+$tar = '172.16.6.44';
+$res=ispingable($tar);
+print "res is $res \n";
+
+my $t = "VlanIndexd";
+$tt = getType($t);
+print "Type is $tt\n";
+my $m = "00:23:11:33:00:99";
+$mm = mac2index($m);
+print "index is $mm\n";
+=cut

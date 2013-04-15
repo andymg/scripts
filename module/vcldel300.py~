@@ -1,0 +1,19 @@
+#!/usr/bin/python
+#-*-coding:utf-8 -*-
+
+#add 200 vcl Mac vlan mapping
+
+import netsnmp
+from base import *
+import random
+DUT = "192.168.4.15"
+vcl15 = vcl(DUT)
+
+src="00:02:03:04:05:"
+dest = "12:34:56:78:12:00"
+
+for last in range(1,300,1):
+    src_l=src+ hex(last)[2:]
+    mem = random.randint(1,15)
+    vcl15.vclMacBasedVlan_add(mac=src_l,vid=last,member='\xc0')
+

@@ -1,0 +1,12 @@
+#!/bin/tcl
+# this is the user interface to start running one or more test suits
+
+# -tester		str				mandatory		default: null
+# -prjname		str				mandatory		default: null
+# -tsname		str				mandatory		default: null
+# -tclist		list			optional		default: all
+# runTestSuit -tester markw -prjname ion2011august -tsname testsuit_vlan -tclist 1,2,4-8
+
+source ./api/loader/loader.tcl
+
+runTestSuit -tester markw -prjname ion2011august -tsname testsuit_example -tclist 1-4

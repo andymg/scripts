@@ -12,7 +12,7 @@ vcl15 = vcl(DUT)
 src="00:02:03:04:05:"
 dest = "12:34:56:78:12:00"
 
-for last in range(1,300,1):
+for last in range(1,255,1):
     src_l=src+ hex(last)[2:]
     mem = random.randint(1,15)
     vcl15.vclMacBasedVlan_del(mac=src_l)

@@ -99,9 +99,9 @@ proc connect_ixia {args} {
 	puts "pdtVer $pdtVer"
 	
 	set logInfo "connect_ixia,take ownership and set factory default of port(s)"
-	printlog -fileid $tcLogId -res conf -cmd $logInfo -comment $allList
+	#printlog -fileid $tcLogId -res conf -cmd $logInfo -comment $allList
 	set verStr "ixia version, product: $pdtVer, OS: $osVer, HAL: $halVer"
-	printlog -fileid $tcLogId -res chck -cmd $verStr
+	#printlog -fileid $tcLogId -res chck -cmd $verStr
 	
 }
 
@@ -193,7 +193,7 @@ proc config_portprop {args} {
 					1000f 	{port config -advertise1000FullDuplex true}
 					default {uWriteExp -errorinfo "input duplex value error of duplexList"}
 				}
-				
+				puts "set duplexItem "
 			}
 			
 			if {$dbgprtVal == 1} {puts "@@ falseDuplex: $falseDuplex"}
@@ -217,14 +217,17 @@ proc config_portprop {args} {
 	for {set i 1} {$i<=10} {incr i} {
 		after $aftertime
 		if {[ixCheckLinkState $aliasval] == 0} {
+			set linkst [ixCheckLinkState $aliasval]
+			puts "ixCheckLinkState $linkst"
 			break
 		}
 		if {$i == 10 && [ixCheckLinkState $aliasval] !=0} {
-			printlog -fileid $tcLogId -res chck -cmd "check all connected link status" -comment "One or more links status are down!"
+			#printlog -fileid $tcLogId -res chck -cmd "check all connected link status" -comment "One or more links status are down!"
 		}
 	}
 	set logStr "config_portprop $args"
-	printlog -fileid $tcLogId -res conf -cmd $logStr
+	puts $logStr
+	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
 
@@ -436,7 +439,7 @@ proc config_frame {args} {
 	}
 	ixWriteConfigToHardware $alias_value
 	set logStr "config_frame $args"
-	printlog -fileid $tcLogId -res conf -cmd $logStr
+	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
 # -alias
@@ -495,7 +498,7 @@ proc config_stream {args} {
 		stream write $chasNum $cardNum $portNum 1
 	}
 	set logStr "config_stream $args"
-	printlog -fileid $tcLogId -res conf -cmd $logStr
+	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
 
@@ -733,7 +736,7 @@ proc config_filter {args} {
 	ixWriteConfigToHardware $alias_value
 	
 	set logStr "config_filter $args"
-	printlog -fileid $tcLogId -res conf -cmd $logStr
+	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
 

@@ -97,10 +97,10 @@ proc printlog1 {args} {
 				set commentOk 1
 			}
 			# write log to file
-			if {[catch {puts $fileid_value $writeStr; flush $fileid_value; puts $writeStr}]} {
-				puts "write test case log failed"
-				exit
-			}
+			#if {[catch {puts $fileid_value $writeStr; flush $fileid_value; puts $writeStr}]} {
+			#	puts "write test case log failed"
+			#	exit
+			#}
 			if {$cmdOk && $commentOk} {
 				break
 			}
@@ -224,11 +224,11 @@ proc printlog {args} {
 				set commentOk 1
 			}
 			# write log to file
-			if {[string length $writeStr] > [string length $timeStr]} {
-				if {[catch {puts $fileid_value $writeStr; flush $fileid_value; puts $writeStr}]} {
-					puts "write test case log failed"
-					exit
-				}
+			#if {[string length $writeStr] > [string length $timeStr]} {
+		#		if {[catch {puts $fileid_value $writeStr; flush $fileid_value; puts $writeStr}]} {
+		#			puts "write test case log failed"
+		#			exit
+		#		}
 			}
 			
 			if {$cmdOk && $commentOk} {

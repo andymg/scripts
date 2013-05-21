@@ -1,3 +1,4 @@
+#!/bin/tcl
 #source $::g_ixwishdir
 package req IxTclHal
 set ::errorInfo ""
@@ -44,7 +45,13 @@ proc connect_ixia {args} {
 		
 		
 		# login and connected to chassis
-		ixConnectToTclServer $ixiaIp
+		puts "os check"
+		if [isUNIX] {
+			if [ixConnectToTclServer $ixiaIp] {
+				puts "Could not connect to $ixiaIp"
+			}
+		}
+
 		ixLogin $userName
 		ixConnectToChassis $ixiaIp
 		set chasId [ixGetChassisID $ixiaIp]
@@ -102,6 +109,8 @@ proc connect_ixia {args} {
 	#printlog -fileid $tcLogId -res conf -cmd $logInfo -comment $allList
 	set verStr "ixia version, product: $pdtVer, OS: $osVer, HAL: $halVer"
 	#printlog -fileid $tcLogId -res chck -cmd $verStr
+	after $aftertime
+	puts $verStr
 	
 }
 
@@ -114,6 +123,7 @@ proc connect_ixia {args} {
 proc config_portprop {args} {
 	global tcLogId
 	set aftertime 1000
+	puts "In config_portprop"
 	#port properties, check link status, clear stat, 
 	#1. get command and handle/parameters
 	foreach {handle para} $args {
@@ -230,8 +240,6 @@ proc config_portprop {args} {
 	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
-
-
 # -frametype
 # -vlanmode
 # -vlanid
@@ -255,6 +263,8 @@ proc config_portprop {args} {
 # -dststep
 # -framesize
 # config_frame -alias allport -frametype none -vlanmode singlevlan -vlanid 10 -priority 3 -dbgprt 1
+# -igmptype [query v1report v2report v3report leave]
+# -groupip 
 proc config_frame {args} {
 	global tcLogId
 	#1. get command and handle/parameters
@@ -378,7 +388,30 @@ proc config_frame {args} {
 		if {[info exist dstip_value]} {
 			ip config -destIpAddr $dstip_value 
 		}
-		
+		# added by andym 20130521,start
+		if {[info exist igmptype_value]} {
+			ip setDefault
+			ip config -ipProtocol igmp
+			ip config -sourceIpAddr $srcip_value
+			ip config -destIpAddr $dstip_value
+			ip config -sourceClass classC
+			ip config -destClass classC
+			ip config -ttl 1
+
+			igmp setDefault
+			switch $igmptype_value {
+     			query     {igmp config -type membershipQuery}
+     			v1report	{igmp config -type membershipReport1}
+     			v2report	{igmp config -type membershipReport2}
+     			v3report    {igmp config -type membershipReport3}
+     			level       {igmp config -type leaveGroup}
+			}
+		}
+		if {[info exist groupip_value]} {
+			igmp config -groupIpAddress $groupip_value
+			igmp set $chasNum $cardNum $portNum
+		}
+		# added by andym 20130521,end
 		if {[info exist srcmac_value]} {
 			set macsaformat [join $srcmac_value]
 			stream config -sa $macsaformat
@@ -442,8 +475,10 @@ proc config_frame {args} {
 	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
+
 # -alias
 # -sendmode
+# -ratemode
 # -rate
 # -pktperbst
 # -bstperstrm
@@ -483,6 +518,16 @@ proc config_stream {args} {
 				stopstrm {stream config -dma stopStream}
 				default {return fail}
 			}			
+		}
+		if {[info exist ratemode_value]} {
+			switch $ratemode_value {
+				fps {stream config -rateMode streamRateModeFps }
+				bps {stream config -rateMode streamRateModeBps }
+				default {stream config -rateMode streamRateModePercentRate }
+			}
+		}
+		if {[info exist fpsrate_value]} {
+			stream config -fpsRate $fpsrate_value
 		}
 		if {[info exist rate_value]} {
 			stream config -percentPacketRate $rate_value
@@ -816,7 +861,7 @@ proc send_traffic {args} {
 		after $aftertime
 	}
 	set logStr "send_traffic $args"
-	printlog -fileid $tcLogId -res conf -cmd $logStr
+	#printlog -fileid $tcLogId -res conf -cmd $logStr
 }
 
 # -alias

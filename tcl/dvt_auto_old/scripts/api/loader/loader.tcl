@@ -34,8 +34,9 @@ set ixiaDir		./api/analyzer/ixia/ixia.tcl
 set consoleDir	./api/console/console.tcl
 set productDir	./api/products/ion/sutapi.tcl
 set nvgtrDir	./api/loader/navigator.tcl
+set ceswitch    ./api/products/init.tcl
 
-loader $configDir $expectDir $utilityDir $ixiaDir $consoleDir $productDir $nvgtrDir
+loader $configDir $expectDir $utilityDir $ixiaDir $consoleDir $productDir $nvgtrDir $ceswitch
 set ::errorInfo ""
 
 
